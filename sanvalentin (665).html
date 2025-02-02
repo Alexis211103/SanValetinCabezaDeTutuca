@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowers</title>
+    <link rel="icon" href="flowers.png" type="image/x-icon">
+    <link rel="stylesheet" href="Css/Style.css"> <!-- Asegurando que la animación se cargue desde aquí -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;1,900&display=swap');
+        * {
+            font-family: 'Poppins', cursive;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #121212; /* Color oscuro de fondo */
+            color: azure;
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            transition: background-color 1s ease-in-out; /* Transición suave de fondo */
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('fondo_estrellado.gif') no-repeat center center fixed; /* Fondo GIF */
+            background-size: cover;
+            z-index: -1; /* Asegura que el fondo no interfiera con el contenido */
+            transition: opacity 1s ease-in-out; /* Transición suave para ocultar el fondo */
+        }
+        .greetings, .description, .button-container, .final-message {
+            position: relative;
+            z-index: 1;
+        }
+        .greetings {
+            font-size: 6rem;
+            font-weight: 900;
+            color: #ff4081;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .description {
+            font-size: 1.8rem;
+            text-align: center;
+            color: #e0e0e0;
+            margin-bottom: 40px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            padding: 0; /* Eliminar relleno */
+            margin: 0; /* Eliminar márgenes */
+            z-index: 1; /* Para que los botones se mantengan encima del fondo */
+        }
+        .botones {
+            background-color: #FFD700; /* Amarillo más fuerte pero no dorado */
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: white; /* Letras blancas */
+            font-size: 1.2rem;
+            display: inline-block;
+            transition: all 0.3s ease-in-out;
+            border: none; /* Eliminar bordes innecesarios */
+            margin: 0 15px; /* Mantener separación entre botones */
+        }
+        .botones a {
+            color: white;
+            text-decoration: none;
+        }
+        .final-message {
+            display: none;
+            text-align: center;
+            font-size: 1.8rem;
+            color: #e0e0e0;
+            max-width: 80%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #audioPlayer {
+            display: none;
+        }
+
+        /* Contenedor para la animación */
+        #animacion {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fondo estrellado GIF -->
+    <div class="background"></div>
+
+    <div class="greetings" id="greetings">
+        <span>¿Queres ser mi San Valentín?</span>
+    </div>
+    <div class="description" id="description">
+        <span>Anael, cuando sonries, hastas los dias grises tienen color</span>
+    </div>
+    <div class="button-container" id="buttonContainer">
+        <button class="botones" id="siButton">
+            <a href="#">SÍ, POR SUPUESTO</a>
+        </button>
+        <button class="botones" id="noButton">
+            <a href="#">NO</a>
+        </button>
+    </div>
+    <div class="final-message" id="finalMessage">
+        Gracias por elegir compartir ese día conmigo. No quiero que sea un día de expectativas, sino de momentos reales, de esos que nacen sin esfuerzo y se quedan en la memoria para siempre. No se trata de regalos ni de formalidades, sino de mirarnos y reírnos sin razón, de perdernos en una conversación infinita o en un silencio cómodo que lo dice todo. Quiero que cada instante sea nuestro, sin prisas ni guiones, solo nosotros, siendo auténticos, disfrutando la magia de estar juntos. Y cuando la noche termine, que nos quede un recuerdo tan hermoso que nos haga sonreír cada vez que lo recordemos.
+    </div>
+    
+    <!-- Aquí se cargará la animación -->
+    <div id="animacion"></div>
+    
+    <audio id="audioPlayer" src="cancion.mp3"></audio>
+    
+    <script>
+        let siButton = document.getElementById('siButton');
+        let noButton = document.getElementById('noButton');
+        let greetings = document.getElementById('greetings');
+        let description = document.getElementById('description');
+        let buttonContainer = document.getElementById('buttonContainer');
+        let finalMessage = document.getElementById('finalMessage');
+        let audioPlayer = document.getElementById('audioPlayer');
+        let animacion = document.getElementById('animacion');
+        let background = document.querySelector('.background');
+        let clickCount = 0;
+        const maxScale = 3.0;
+
+        noButton.addEventListener('click', () => {
+            if (clickCount < 5) {
+                clickCount++;
+                let newScale = 1 + clickCount * 0.2;
+                if (newScale > maxScale) newScale = maxScale;
+                siButton.style.transform = `scale(${newScale})`;
+                siButton.style.transition = "all 0.3s ease-in-out";
+                noButton.style.opacity = 1 - (clickCount * 0.2);
+            }
+            if (noButton.style.opacity <= 0) {
+                noButton.style.display = 'none';
+            }
+        });
+
+        siButton.addEventListener('click', () => {
+            // Desvanecer el fondo suavemente
+            background.style.opacity = '0';
+
+            setTimeout(() => {
+                greetings.style.display = 'none';
+                description.style.display = 'none';
+                buttonContainer.style.display = 'none';
+                finalMessage.style.display = 'block';
+                
+                // Mostrar la animación
+                animacion.style.display = 'block';
+                animacion.innerHTML = `<iframe src="FLORES.html" width="100%" height="100%" style="border:none;"></iframe>`;
+                
+                // Reproducir música
+                audioPlayer.play();
+            }, 1000); // Retardo de 1 segundo para que la transición sea visible
+        });
+    </script>
+</body>
+</html>
